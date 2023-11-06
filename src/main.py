@@ -74,7 +74,6 @@ def download(session):
     if response is None:
         return
     soup = BeautifulSoup(response.text, features="lxml")
-    main_tag = find_tag(soup, "div", {"role": "main"})
     table_tag = main_tag.find_tag(soup, "table", {"class": "docutils"})
     pdf_a4_tag = table_tag.find_tag(
         soup, "a", {"href": re.compile(r".+pdf-a4\.zip$")}
