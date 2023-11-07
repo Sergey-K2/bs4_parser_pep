@@ -19,7 +19,7 @@ def default_output(results, *args):
         print(*row)
 
 
-def pretty_output(results):
+def pretty_output(results, *args):
     table = PrettyTable()
     table.field_names = results[0]
     table.align = "l"
