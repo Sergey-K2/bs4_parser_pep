@@ -13,7 +13,7 @@ from constants import (
 )
 
 
-def default_output(results):
+def default_output(results, *args):
     for row in results:
         print(*row)
 
