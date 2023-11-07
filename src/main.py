@@ -9,8 +9,8 @@ from tqdm import tqdm
 from configs import configure_argument_parser, configure_logging
 from constants import (
     ANY_ERROR_PHRASE,
+    BASE_DIR,
     CONSOLE_ARGUMENTS_PHRASE,
-    DOWNLOADS_DIR,
     DOWNLOAD_LOGGING_PHRASE,
     EXPECTED_STATUS,
     KEY_ERROR_PHRASE,
@@ -90,6 +90,8 @@ def download(session):
     pdf_a4_link = pdf_a4_tag["href"]
     archive_url = urljoin(downloads_url, pdf_a4_link)
     filename = archive_url.split("/")[-1]
+    # При использовании константы не проходит pytest
+    DOWNLOADS_DIR = BASE_DIR / "downloads"
     DOWNLOADS_DIR.mkdir(exist_ok=True)
     archive_path = DOWNLOADS_DIR / filename
     response = session.get(archive_url)
