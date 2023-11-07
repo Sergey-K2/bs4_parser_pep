@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
-from exceptions import ParserFindTagException, RequestException
+from exceptions import ParserFindTagException
+from requests import RequestException
 
 from constants import RESPONSE_UTILS_PHRASE, TAG_ERROR_PHRASE
 
