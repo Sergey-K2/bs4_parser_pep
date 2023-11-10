@@ -25,16 +25,18 @@ LOG_NAME = LOG_DIR_PATH / LOG_FILE
 RESULTS_DIR = BASE_DIR / RESULTS_NAME
 DOWNLOADS_DIR = BASE_DIR / DOWNLOADS_NAME
 DOWNLOAD_LOGGING_PHRASE = "Архив был загружен и сохранён: {}"
-RESPONSE_ERROR_LOGGING_PHRASE = "Ответ не получен"
-KEY_ERROR_PHRASE = "Ничего не нашлось"
+RESPONSE_ERROR_LOGGING_PHRASE = "Ответ от {} не получен. Ошибка: {}"
+LATEST_VERSIONS_ERROR_PHRASE = "Ничего не нашлось"
 STATUS_ERROR_PHRASE = (
-    "Несовпадающие статусы:\n"
-    "{}\n"
+    "Несовпадающие статусы:\n" "{}\n"
     "Статус в карточке: {}\n"
     "Ожидаемые статусы: {}"
 )
 CONSOLE_ARGUMENTS_PHRASE = "Аргументы командной строки: {}"
 ANY_ERROR_PHRASE = "Работа парсера завершилась с ошибкой: {}"
 SAVING_LOGGING_PHRASE = "Файл с результатами был сохранён: {}"
-RESPONSE_UTILS_PHRASE = "Возникла ошибка при загрузке страницы {}"
+RESPONSE_UTILS_PHRASE = "Возникла ошибка при загрузке страницы {}. Ошибка: {}."
 TAG_ERROR_PHRASE = "Не найден тег {} {}"
+START_LOGGING_PHRASE = "Парсер запущен!"
+FINAL_LOGGING_PHRASE = "Парсер завершил работу."
+DL_ERROR_PHRASE = "Тэг dl не найден"

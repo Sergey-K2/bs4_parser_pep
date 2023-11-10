@@ -43,4 +43,4 @@ Python BeautifulSoup4 Prettytable
 
 ## Автор: 
 Сергей Козлов
-GitHub: Sergey-K2
+GitHub: [Sergey-K2](https://github.com/Sergey-K2)

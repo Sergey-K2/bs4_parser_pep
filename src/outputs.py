@@ -28,7 +28,6 @@ def pretty_output(results, *args):
 
 
 def file_output(results, cli_args):
-    # Не проходит pytest при использовании констант
     results_dir = BASE_DIR / RESULTS_NAME
     results_dir.mkdir(exist_ok=True)
     parser_mode = cli_args.mode
@@ -36,8 +35,7 @@ def file_output(results, cli_args):
     file_name = f"{parser_mode}_{now_formatted}.csv"
     file_path = BASE_DIR / file_name
     with open(file_path, "w", encoding="utf-8") as f:
-        writer = csv.writer(f, dialect=csv.unix_dialect)
-        writer.writerows(results)
+        csv.writer(f, dialect=csv.unix_dialect).writerows(results)
     logging.info(SAVING_LOGGING_PHRASE.format(file_path))
 
 
@@ -49,4 +47,4 @@ TYPES_OF_OUTPUT = {
 
 
 def control_output(results, cli_args):
-    TYPES_OF_OUTPUT.get(cli_args.output)(results, cli_args)
+    TYPES_OF_OUTPUT[cli_args.output](results, cli_args)
