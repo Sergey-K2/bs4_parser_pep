@@ -9,36 +9,36 @@ from tqdm import tqdm
 
 from configs import configure_argument_parser, configure_logging
 from constants import (
-    ANY_ERROR_PHRASE,
+    ANY_ERROR,
     BASE_DIR,
-    CONSOLE_ARGUMENTS_PHRASE,
-    DOWNLOAD_LOGGING_PHRASE,
-    DL_ERROR_PHRASE,
+    CONSOLE_ARGUMENTS,
+    DOWNLOAD_LOGGING,
+    DOWNLOADS_NAME,
+    DL_ERROR,
     EXPECTED_STATUS,
-    RESPONSE_ERROR_LOGGING_PHRASE,
-    FINAL_LOGGING_PHRASE,
-    LATEST_VERSIONS_ERROR_PHRASE,
+    RESPONSE_ERROR_LOGGING,
+    FINAL_LOGGING,
+    LATEST_VERSIONS_ERROR,
     MAIN_DOC_URL,
     PEPS_URL,
-    START_LOGGING_PHRASE,
-    STATUS_ERROR_PHRASE,
+    START_LOGGING,
+    STATUS_ERROR,
 )
 from outputs import control_output
 from utils import find_tag, make_soup
 
 
 def whats_new(session):
-    soup = make_soup(session, urljoin(MAIN_DOC_URL, "whatsnew/"))
     results = [("Ссылка на статью", "Заголовок", "Редактор, Автор")]
     logs = []
     for version_a_tag in tqdm(
-        soup.select(
+        make_soup(session, urljoin(MAIN_DOC_URL, "whatsnew/")).select(
             "#what-s-new-in-python div.toctree-wrapper.compound "
             "li.toctree-l1 a[href$='.html']"
         )
     ):
         href = version_a_tag["href"]
-        version_link = urljoin(urljoin(MAIN_DOC_URL, "whatsnew/"), href)
+        version_link = urljoin(urljoin(MAIN_DOC_URL, "whatsnew"), href)
         try:
             soup = make_soup(session, version_link)
             h1 = find_tag(soup, "h1")
@@ -46,10 +46,10 @@ def whats_new(session):
             if dl is not None:
                 dl_text = dl.text.replace("\n", " ")
             else:
-                dl_text = DL_ERROR_PHRASE
+                dl_text = DL_ERROR
             results.append((version_link, h1.text, dl_text))
         except Exception as error:
-            logs.append(RESPONSE_ERROR_LOGGING_PHRASE.format(
+            logs.append(RESPONSE_ERROR_LOGGING.format(
                 version_link, error))
     list(map(logging.error, logs))
     return results
@@ -64,7 +64,7 @@ def latest_versions(session):
             a_tags = ul.find_all("a")
             break
         else:
-            raise Exception(LATEST_VERSIONS_ERROR_PHRASE)
+            raise ValueError(LATEST_VERSIONS_ERROR)
 
     results = [("Ссылка на документацию", "Версия", "Статус")]
     pattern = r"Python (?P<version>\d\.\d+) \((?P<status>.*)\)"
@@ -88,13 +88,13 @@ def download(session):
     pdf_a4_link = pdf_a4_tag["href"]
     archive_url = urljoin(downloads_url, pdf_a4_link)
     filename = archive_url.split("/")[-1]
-    DOWNLOADS_DIR = BASE_DIR / "downloads"
+    DOWNLOADS_DIR = BASE_DIR / DOWNLOADS_NAME
     DOWNLOADS_DIR.mkdir(exist_ok=True)
     archive_path = DOWNLOADS_DIR / filename
     response = session.get(archive_url)
     with open(archive_path, "wb") as file:
         file.write(response.content)
-    logging.info(DOWNLOAD_LOGGING_PHRASE.format(archive_path))
+    logging.info(DOWNLOAD_LOGGING.format(archive_path))
 
 
 def pep(session):
@@ -110,23 +110,22 @@ def pep(session):
         table_status = first_column_tag.text[1:]
         href = find_tag(tr_tag, "a")["href"]
         pep_url = urljoin(PEPS_URL, href)
-    try:
-        peps_soup = make_soup(session, pep_url)
-        dl_tag = find_tag(peps_soup, "dl")
-        dt_tags = dl_tag.find_all("dt")
-        for dt in dt_tags:
-            if dt.text == "Status:":
-                dt_status = dt
-                break
-        peps_status = dt_status.find_next_sibling("dd").string
-        peps[peps_status] += 1
-        if peps_status not in EXPECTED_STATUS[table_status]:
-            status_logs.append(STATUS_ERROR_PHRASE.format(
-                pep_url, peps_status, EXPECTED_STATUS[table_status]
-            ))
-    except Exception as error:
-        logs.append(RESPONSE_ERROR_LOGGING_PHRASE.format(pep_url, error))
-        list(map(logging.error, logs))
+        try:
+            peps_soup = make_soup(session, pep_url)
+            dl_tag = find_tag(peps_soup, "dl")
+            dt_tags = dl_tag.find_all("dt")
+            for dt in dt_tags:
+                if dt.text == "Status:":
+                    dt_status = dt
+                    break
+            peps_status = dt_status.find_next_sibling("dd").string
+            peps[peps_status] += 1
+            if peps_status not in EXPECTED_STATUS[table_status]:
+                status_logs.append(STATUS_ERROR.format(
+                    pep_url, peps_status, EXPECTED_STATUS[table_status]
+                ))
+        except Exception as error:
+            logs.append(RESPONSE_ERROR_LOGGING.format(pep_url, error))
     list(map(logging.info, status_logs))
     return [
         ("Статус", "Количество"),
@@ -145,10 +144,10 @@ MODE_TO_FUNCTION = {
 
 def main():
     configure_logging()
-    logging.info(START_LOGGING_PHRASE)
+    logging.info(START_LOGGING)
     arg_parser = configure_argument_parser(MODE_TO_FUNCTION.keys())
     args = arg_parser.parse_args()
-    logging.info(CONSOLE_ARGUMENTS_PHRASE.format(args))
+    logging.info(CONSOLE_ARGUMENTS.format(args))
     try:
         session = requests_cache.CachedSession()
         if args.clear_cache:
@@ -160,10 +159,10 @@ def main():
             control_output(results, args)
 
     except Exception as error:
-        logging.exception(ANY_ERROR_PHRASE.format(
+        logging.exception(ANY_ERROR.format(
             error=error), stack_info=True)
 
-    logging.info(FINAL_LOGGING_PHRASE)
+    logging.info(FINAL_LOGGING)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ from constants import (
     PRETTY_ARGUMENT,
     FILE_ARGUMENT,
     RESULTS_NAME,
-    SAVING_LOGGING_PHRASE,
+    SAVING_LOGGING,
 )
 
 
@@ -36,7 +36,7 @@ def file_output(results, cli_args):
     file_path = BASE_DIR / file_name
     with open(file_path, "w", encoding="utf-8") as f:
         csv.writer(f, dialect=csv.unix_dialect).writerows(results)
-    logging.info(SAVING_LOGGING_PHRASE.format(file_path))
+    logging.info(SAVING_LOGGING.format(file_path))
 
 
 TYPES_OF_OUTPUT = {
